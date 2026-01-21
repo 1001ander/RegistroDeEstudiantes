@@ -8,4 +8,6 @@ interface EstudianteRepository {
     suspend fun getEstudiante(id: Int): Estudiante?
     suspend fun upsert(estudiante: Estudiante): Int
     suspend fun delete(id: Int)
+
+    suspend fun existeEstudianteConNombre(nombre: String, estudianteId: Int?): Boolean
 }
