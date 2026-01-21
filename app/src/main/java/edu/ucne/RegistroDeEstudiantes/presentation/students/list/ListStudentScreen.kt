@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -179,5 +180,22 @@ private fun EstudianteCard(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun ListEstudiantePreview() {
+    MaterialTheme {
+        ListEstudianteBody(
+            state = ListEstudianteUiState(
+                estudiantes = listOf(
+                    Estudiante(1, "Juan Pérez", "juan@example.com", 20),
+                    Estudiante(2, "María García", "maria@example.com", 22)
+                )
+            ),
+            onEvent = {},
+            onNavigateToEdit = {}
+        )
     }
 }
