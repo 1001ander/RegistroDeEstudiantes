@@ -109,7 +109,25 @@ class EditEstudianteViewModel @Inject constructor(
                     )
                 }
             }.onFailure { e ->
-                _state.update { it.copy(isSaving = false) }
+
+                val errorMessage = e.message ?: "Error al guardar el estudiante"
+
+
+                if (errorMessage.contains("Ya existe un estudiante", ignoreCase = true)) {
+                    _state.update {
+                        it.copy(
+                            isSaving = false,
+                            nombresError = errorMessage
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            isSaving = false,
+                            errorMessage = errorMessage
+                        )
+                    }
+                }
             }
         }
     }

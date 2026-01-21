@@ -30,4 +30,6 @@ class EstudianteRepositoryImpl @Inject constructor(
     override suspend fun delete(id: Int) {
         dao.deleteById(id)
     }
-}
+    override suspend fun existeEstudianteConNombre(nombre: String, estudianteId: Int?): Boolean {
+        return dao.existeEstudianteConNombre(nombre, estudianteId)
+}   }
