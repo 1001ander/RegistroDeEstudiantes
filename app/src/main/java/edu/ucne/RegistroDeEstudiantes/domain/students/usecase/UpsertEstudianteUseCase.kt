@@ -14,6 +14,16 @@ class UpsertEstudianteUseCase @Inject constructor(
         if (!nombreResult.isValid)
             return Result.failure(IllegalArgumentException(nombreResult.error))
 
+        val existe = repository.existeEstudianteConNombre(
+            nombre = estudiante.nombres.trim(),
+            estudianteId = estudiante.estudianteId?.takeIf { it > 0 }
+        )
+        if (existe) {
+            return Result.failure(
+                IllegalArgumentException("Ya existe un estudiante con el nombre '${estudiante.nombres}'")
+            )
+        }
+
         val emailResult = validateEmail(estudiante.email)
         if (!emailResult.isValid)
             return Result.failure(IllegalArgumentException(emailResult.error))

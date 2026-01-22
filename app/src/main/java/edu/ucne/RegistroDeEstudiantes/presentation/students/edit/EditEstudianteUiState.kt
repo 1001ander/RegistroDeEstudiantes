@@ -8,6 +8,7 @@ data class EditEstudianteUiState(
     val nombresError: String? = null,
     val emailError: String? = null,
     val edadError: String? = null,
+    val errorMessage: String? = null,
     val isSaving: Boolean = false,
     val isDeleting: Boolean = false,
     val isNew: Boolean = true,

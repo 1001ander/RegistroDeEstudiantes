@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -159,5 +160,21 @@ private fun EditEstudianteBody(
                 }
             }
         }
+    }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun EditEstudiantePreview() {
+    MaterialTheme {
+        EditEstudianteBody(
+            state = EditEstudianteUiState(
+                nombres = "Juan Pérez",
+                email = "juan@example.com",
+                edad = "20"
+            ),
+            onEvent = {},
+            onNavigateBack = {},
+            isNewEstudiante = true
+        )
     }
 }

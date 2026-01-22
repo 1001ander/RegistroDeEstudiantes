@@ -24,4 +24,12 @@ interface EstudianteDao {
     @Query(value = "DELETE FROM Estudiantes WHERE estudianteId = :id")
     suspend fun deleteById(id: Int
     )
+    @Query("""
+        SELECT EXISTS(
+            SELECT 1 FROM Estudiantes 
+            WHERE LOWER(TRIM(nombres)) = LOWER(TRIM(:nombre))
+            AND (:estudianteId IS NULL OR estudianteId != :estudianteId)
+        )
+    """)
+    suspend fun existeEstudianteConNombre(nombre: String, estudianteId: Int?): Boolean
 }
