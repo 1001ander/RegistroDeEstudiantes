@@ -14,11 +14,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,7 +47,8 @@ fun ListAsignaturaScreen(
     ListAsignaturaBody(
         state = state,
         onAddAsignatura = onAddAsignatura,
-        onSelectAsignatura = onSelectAsignatura
+        onSelectAsignatura = onSelectAsignatura,
+        onDeleteAsignatura = { viewModel.deleteAsignatura(it) }
     )
 }
 
@@ -52,7 +56,8 @@ fun ListAsignaturaScreen(
 private fun ListAsignaturaBody(
     state: ListAsignaturaUiState,
     onAddAsignatura: () -> Unit,
-    onSelectAsignatura: (Int) -> Unit
+    onSelectAsignatura: (Int) -> Unit,
+    onDeleteAsignatura: (Int) -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
@@ -92,7 +97,8 @@ private fun ListAsignaturaBody(
                         items(state.asignaturas) { asignatura ->
                             AsignaturaCard(
                                 asignatura = asignatura,
-                                onSelectAsignatura = onSelectAsignatura
+                                onSelectAsignatura = onSelectAsignatura,
+                                onDeleteAsignatura = onDeleteAsignatura
                             )
                         }
                     }
@@ -105,13 +111,13 @@ private fun ListAsignaturaBody(
 @Composable
 private fun AsignaturaCard(
     asignatura: Asignatura,
-    onSelectAsignatura: (Int) -> Unit
+    onSelectAsignatura: (Int) -> Unit,
+    onDeleteAsignatura: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clickable { onSelectAsignatura(asignatura.asignaturaId) },
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -121,7 +127,8 @@ private fun AsignaturaCard(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = asignatura.codigo,
@@ -129,11 +136,29 @@ private fun AsignaturaCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Text(
-                    text = "${asignatura.creditos} créditos",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
+
+                Row {
+                    Text(
+                        text = "${asignatura.creditos} créditos",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    IconButton(onClick = { onSelectAsignatura(asignatura.asignaturaId) }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = { onDeleteAsignatura(asignatura.asignaturaId) }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.height(4.dp))
@@ -188,7 +213,8 @@ private fun ListAsignaturaWithDataPreview() {
                 )
             ),
             onAddAsignatura = {},
-            onSelectAsignatura = {}
+            onSelectAsignatura = {},
+            onDeleteAsignatura = {}
         )
     }
 }
@@ -200,7 +226,8 @@ private fun ListAsignaturaEmptyPreview() {
         ListAsignaturaBody(
             state = ListAsignaturaUiState(asignaturas = emptyList()),
             onAddAsignatura = {},
-            onSelectAsignatura = {}
+            onSelectAsignatura = {},
+            onDeleteAsignatura = {}
         )
     }
 }
@@ -217,8 +244,8 @@ private fun AsignaturaCardPreview() {
                 aula = "A-201",
                 creditos = 4
             ),
-            onSelectAsignatura = {}
+            onSelectAsignatura = {},
+            onDeleteAsignatura = {}
         )
     }
 }
-
