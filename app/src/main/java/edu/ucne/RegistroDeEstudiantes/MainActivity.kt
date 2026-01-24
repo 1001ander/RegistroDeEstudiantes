@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import edu.ucne.RegistroDeEstudiantes.presentation.students.EstudianteScreen
+import edu.ucne.RegistroDeEstudiantes.presentation.navigation.MainNavHost
 import edu.ucne.RegistroDeEstudiantes.ui.theme.RegistroDeEstudiantesTheme
 
 @AndroidEntryPoint
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RegistroDeEstudiantesTheme {
                 val navController = rememberNavController()
-                EstudianteScreen(navController)
+                MainNavHost(navHostController = navController)
             }
         }
     }
