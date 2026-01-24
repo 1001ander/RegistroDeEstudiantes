@@ -4,7 +4,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import edu.ucne.RegistroDeEstudiantes.data.asignaturas.repository.AsignaturaRepositoryImpl
 import edu.ucne.RegistroDeEstudiantes.data.students.repository.EstudianteRepositoryImpl
+import edu.ucne.RegistroDeEstudiantes.domain.asignaturas.repository.AsignaturaRepository
 import edu.ucne.RegistroDeEstudiantes.domain.students.repository.EstudianteRepository
 import javax.inject.Singleton
 
@@ -19,4 +21,10 @@ abstract class EstudianteRepositoryModule {
     abstract fun bindEstudianteRepository(
         estudianteRepositoryImpl: EstudianteRepositoryImpl
     ): EstudianteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAsignaturaRepository(
+        impl: AsignaturaRepositoryImpl
+    ): AsignaturaRepository
 }
