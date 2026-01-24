@@ -53,8 +53,7 @@ fun EditEstudianteScreen(
     EditEstudianteBody(
         state = state,
         onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack,
-        isNewEstudiante = estudianteId == null
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -63,15 +62,14 @@ fun EditEstudianteScreen(
 private fun EditEstudianteBody(
     state: EditEstudianteUiState,
     onEvent: (EditEstudianteUiEvent) -> Unit,
-    onNavigateBack: () -> Unit,
-    isNewEstudiante: Boolean
+    onNavigateBack: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = if (isNewEstudiante) "Nuevo Estudiante" else "Editar Estudiante"
+                        text = if (state.isNew) "Nuevo Estudiante" else "Editar Estudiante"
                     )
                 },
                 navigationIcon = {
@@ -100,7 +98,9 @@ private fun EditEstudianteBody(
             if (state.nombresError != null) {
                 Text(
                     text = state.nombresError,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
             }
 
@@ -117,7 +117,9 @@ private fun EditEstudianteBody(
             if (state.emailError != null) {
                 Text(
                     text = state.emailError,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
             }
 
@@ -134,7 +136,9 @@ private fun EditEstudianteBody(
             if (state.edadError != null) {
                 Text(
                     text = state.edadError,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
             }
 
@@ -143,25 +147,41 @@ private fun EditEstudianteBody(
             Row {
                 Button(
                     onClick = { onEvent(EditEstudianteUiEvent.Save) },
-                    enabled = !state.isSaving
+                    enabled = !state.isSaving,
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Guardar")
+                    Text(text = if (state.isSaving) "Guardando..." else "Guardar")
                 }
 
-                Spacer(Modifier.width(width = 8.dp))
-
                 if (!state.isNew) {
+                    Spacer(Modifier.width(width = 8.dp))
+
                     OutlinedButton(
                         onClick = { onEvent(EditEstudianteUiEvent.Delete) },
-                        enabled = !state.isDeleting
+                        enabled = !state.isDeleting,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Text(text = "Eliminar")
+                        Text(text = if (state.isDeleting) "Eliminando..." else "Eliminar")
                     }
                 }
             }
         }
     }
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun NewEstudiantePreview() {
+    MaterialTheme {
+        EditEstudianteBody(
+            state = EditEstudianteUiState(
+                isNew = true
+            ),
+            onEvent = {}
+        )
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun EditEstudiantePreview() {
@@ -170,11 +190,10 @@ private fun EditEstudiantePreview() {
             state = EditEstudianteUiState(
                 nombres = "Juan Pérez",
                 email = "juan@example.com",
-                edad = "20"
+                edad = "20",
+                isNew = false
             ),
-            onEvent = {},
-            onNavigateBack = {},
-            isNewEstudiante = true
+            onEvent = {}
         )
     }
 }
