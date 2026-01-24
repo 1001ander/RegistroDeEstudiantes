@@ -1,4 +1,4 @@
-package edu.ucne.RegistroDeEstudiantes.presentation.students.edit
+package edu.ucne.RegistroDeEstudiantes.presentation.asignaturas.edit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,16 +31,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun EditEstudianteScreen(
-    estudianteId: Int?,
-    viewModel: EditEstudianteViewModel = hiltViewModel(),
+fun EditAsignaturaScreen(
+    asignaturaId: Int?,
+    viewModel: EditAsignaturaViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(estudianteId) {
-        if (estudianteId != null && estudianteId > 0) {
-            viewModel.onEvent(EditEstudianteUiEvent.LoadEstudiante(estudianteId))
+    LaunchedEffect(asignaturaId) {
+        if (asignaturaId != null && asignaturaId > 0) {
+            viewModel.onEvent(EditAsignaturaUiEvent.LoadAsignatura(asignaturaId))
         }
     }
 
@@ -50,7 +50,13 @@ fun EditEstudianteScreen(
         }
     }
 
-    EditEstudianteBody(
+    LaunchedEffect(state.deleted) {
+        if (state.deleted) {
+            onNavigateBack()
+        }
+    }
+
+    EditAsignaturaBody(
         state = state,
         onEvent = viewModel::onEvent,
         onNavigateBack = onNavigateBack
@@ -59,9 +65,9 @@ fun EditEstudianteScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditEstudianteBody(
-    state: EditEstudianteUiState,
-    onEvent: (EditEstudianteUiEvent) -> Unit,
+private fun EditAsignaturaBody(
+    state: EditAsignaturaUiState,
+    onEvent: (EditAsignaturaUiEvent) -> Unit,
     onNavigateBack: () -> Unit = {}
 ) {
     Scaffold(
@@ -69,7 +75,7 @@ private fun EditEstudianteBody(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (state.isNew) "Nuevo Estudiante" else "Editar Estudiante"
+                        text = if (state.isNew) "Nueva Asignatura" else "Editar Asignatura"
                     )
                 },
                 navigationIcon = {
@@ -88,16 +94,17 @@ private fun EditEstudianteBody(
                 .padding(paddingValues = padding)
                 .padding(all = 16.dp)
         ) {
+
             OutlinedTextField(
-                value = state.nombres,
-                onValueChange = { onEvent(EditEstudianteUiEvent.NombresChanged(value = it)) },
-                label = { Text(text = "Nombres") },
-                isError = state.nombresError != null,
+                value = state.codigo,
+                onValueChange = { onEvent(EditAsignaturaUiEvent.CodigoChanged(value = it)) },
+                label = { Text(text = "Código") },
+                isError = state.codigoError != null,
                 modifier = Modifier.fillMaxWidth()
             )
-            if (state.nombresError != null) {
+            if (state.codigoError != null) {
                 Text(
-                    text = state.nombresError,
+                    text = state.codigoError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -106,17 +113,17 @@ private fun EditEstudianteBody(
 
             Spacer(Modifier.height(height = 12.dp))
 
+
             OutlinedTextField(
-                value = state.email,
-                onValueChange = { onEvent(EditEstudianteUiEvent.EmailChanged(value = it)) },
-                label = { Text(text = "Email") },
-                isError = state.emailError != null,
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                value = state.nombre,
+                onValueChange = { onEvent(EditAsignaturaUiEvent.NombreChanged(value = it)) },
+                label = { Text(text = "Nombre") },
+                isError = state.nombreError != null,
+                modifier = Modifier.fillMaxWidth()
             )
-            if (state.emailError != null) {
+            if (state.nombreError != null) {
                 Text(
-                    text = state.emailError,
+                    text = state.nombreError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -125,17 +132,37 @@ private fun EditEstudianteBody(
 
             Spacer(Modifier.height(height = 12.dp))
 
+
             OutlinedTextField(
-                value = state.edad,
-                onValueChange = { onEvent(EditEstudianteUiEvent.EdadChanged(value = it)) },
-                label = { Text(text = "Edad") },
-                isError = state.edadError != null,
+                value = state.aula,
+                onValueChange = { onEvent(EditAsignaturaUiEvent.AulaChanged(value = it)) },
+                label = { Text(text = "Aula") },
+                isError = state.aulaError != null,
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (state.aulaError != null) {
+                Text(
+                    text = state.aulaError,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(Modifier.height(height = 12.dp))
+
+
+            OutlinedTextField(
+                value = state.creditos,
+                onValueChange = { onEvent(EditAsignaturaUiEvent.CreditosChanged(value = it)) },
+                label = { Text(text = "Créditos") },
+                isError = state.creditosError != null,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            if (state.edadError != null) {
+            if (state.creditosError != null) {
                 Text(
-                    text = state.edadError,
+                    text = state.creditosError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -144,9 +171,10 @@ private fun EditEstudianteBody(
 
             Spacer(Modifier.height(height = 24.dp))
 
+
             Row {
                 Button(
-                    onClick = { onEvent(EditEstudianteUiEvent.Save) },
+                    onClick = { onEvent(EditAsignaturaUiEvent.Save) },
                     enabled = !state.isSaving,
                     modifier = Modifier.weight(1f)
                 ) {
@@ -157,7 +185,7 @@ private fun EditEstudianteBody(
                     Spacer(Modifier.width(width = 8.dp))
 
                     OutlinedButton(
-                        onClick = { onEvent(EditEstudianteUiEvent.Delete) },
+                        onClick = { onEvent(EditAsignaturaUiEvent.Delete) },
                         enabled = !state.isDeleting,
                         modifier = Modifier.weight(1f)
                     ) {
@@ -169,13 +197,31 @@ private fun EditEstudianteBody(
     }
 }
 
+
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun NewEstudiantePreview() {
+private fun NewAsignaturaPreview() {
     MaterialTheme {
-        EditEstudianteBody(
-            state = EditEstudianteUiState(
-                isNew = true
+        EditAsignaturaBody(
+            state = EditAsignaturaUiState(isNew = true),
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun EditAsignaturaPreview() {
+    MaterialTheme {
+        EditAsignaturaBody(
+            state = EditAsignaturaUiState(
+                asignaturaId = 1,
+                codigo = "MAT101",
+                nombre = "Matemáticas I",
+                aula = "A-201",
+                creditos = "4",
+                isNew = false
             ),
             onEvent = {}
         )
@@ -184,14 +230,18 @@ private fun NewEstudiantePreview() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun EditEstudiantePreview() {
+private fun WithErrorsPreview() {
     MaterialTheme {
-        EditEstudianteBody(
-            state = EditEstudianteUiState(
-                nombres = "Juan Pérez",
-                email = "juan@example.com",
-                edad = "20",
-                isNew = false
+        EditAsignaturaBody(
+            state = EditAsignaturaUiState(
+                codigo = "M",
+                nombre = "Ma",
+                aula = "",
+                creditos = "15",
+                codigoError = "Mínimo 3 caracteres",
+                nombreError = "Mínimo 3 caracteres",
+                aulaError = "El aula es requerida",
+                creditosError = "Máximo 10 créditos"
             ),
             onEvent = {}
         )
