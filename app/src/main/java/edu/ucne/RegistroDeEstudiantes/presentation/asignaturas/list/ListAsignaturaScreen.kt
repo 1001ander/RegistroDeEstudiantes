@@ -1,6 +1,5 @@
 package edu.ucne.RegistroDeEstudiantes.presentation.asignaturas.list
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,12 +18,14 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,6 +53,7 @@ fun ListAsignaturaScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ListAsignaturaBody(
     state: ListAsignaturaUiState,
@@ -60,6 +62,11 @@ private fun ListAsignaturaBody(
     onDeleteAsignatura: (Int) -> Unit
 ) {
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Lista de Asignaturas") }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddAsignatura) {
                 Icon(
@@ -120,15 +127,16 @@ private fun AsignaturaCard(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Contenido de la asignatura
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = asignatura.codigo,
@@ -137,45 +145,48 @@ private fun AsignaturaCard(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                Row {
-                    Text(
-                        text = "${asignatura.creditos} créditos",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    IconButton(onClick = { onSelectAsignatura(asignatura.asignaturaId) }) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Editar",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    IconButton(onClick = { onDeleteAsignatura(asignatura.asignaturaId) }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = asignatura.nombre,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = "Aula: ${asignatura.aula}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = "${asignatura.creditos} créditos",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
 
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = asignatura.nombre,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = "Aula: ${asignatura.aula}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            // Botones de acción
+            Row {
+                IconButton(onClick = { onSelectAsignatura(asignatura.asignaturaId) }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = { onDeleteAsignatura(asignatura.asignaturaId) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         }
     }
 }
