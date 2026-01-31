@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,6 +35,16 @@ fun DrawerMenu(
 ) {
     val selectedItem = remember { mutableStateOf("Estudiantes") }
     val scope = rememberCoroutineScope()
+
+
+    val currentBackStackEntry = navHostController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry.value?.destination?.route
+
+    val drawerTitle = when {
+        currentRoute?.contains("TipoPenalidad") == true -> "Lista de Penalidades"
+        currentRoute?.contains("Asignatura") == true -> "Lista de Asignaturas"
+        else -> "Registro de Estudiantes"
+    }
 
     fun handleItemClick(destination: Screen, item: String) {
         navHostController.navigate(destination) {
@@ -52,7 +63,7 @@ fun DrawerMenu(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Registro de Estudiantes",
+                    text = drawerTitle,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.DarkGray,

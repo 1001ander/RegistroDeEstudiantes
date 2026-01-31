@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -41,12 +43,23 @@ fun EditTipoPenalidadScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditTipoPenalidadBody(
     state: EditTipoPenalidadUiState,
     onEvent: (EditTipoPenalidadUiEvent) -> Unit
 ) {
-    Scaffold { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = if (state.isNew) "Nueva Penalidad" else "Editar Penalidad"
+                    )
+                }
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .padding(paddingValues = padding)
@@ -138,7 +151,6 @@ private fun EditTipoPenalidadBody(
 }
 
 
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun NewTipoPenalidadPreview() {
@@ -184,4 +196,3 @@ private fun WithErrorsPreview() {
         )
     }
 }
-
