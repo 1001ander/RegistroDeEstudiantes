@@ -15,4 +15,10 @@ sealed class Screen {
 
     @Serializable
     data class EditAsignatura(val asignaturaId: Int?) : Screen()
+
+    @Serializable
+    data object TipoPenalidadList : Screen()  // ← AGREGAR
+
+    @Serializable
+    data class EditTipoPenalidad(val tipoId: Int?) : Screen()  // ← AGREGAR
 }
