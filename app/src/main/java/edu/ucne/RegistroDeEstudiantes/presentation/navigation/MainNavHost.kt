@@ -76,7 +76,6 @@ fun MainNavHost(
         composable<Screen.EditTipoPenalidad> {
             val args = it.toRoute<Screen.EditTipoPenalidad>()
             EditTipoPenalidadScreen(
-                viewModel = androidx.hilt.navigation.compose.hiltViewModel(),
                 onNavigateBack = {
                     navHostController.navigateUp()
                 }

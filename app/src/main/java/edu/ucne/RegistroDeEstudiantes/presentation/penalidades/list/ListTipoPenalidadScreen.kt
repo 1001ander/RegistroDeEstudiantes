@@ -1,6 +1,5 @@
 package edu.ucne.RegistroDeEstudiantes.presentation.penalidades.list
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +13,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,17 +48,25 @@ fun ListTipoPenalidadScreen(
     ListTipoPenalidadBody(
         state = state,
         onAddTipoPenalidad = onAddTipoPenalidad,
-        onSelectTipoPenalidad = onSelectTipoPenalidad
+        onSelectTipoPenalidad = onSelectTipoPenalidad,
+        onDeleteTipoPenalidad = { viewModel.deleteTipoPenalidad(it) }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ListTipoPenalidadBody(
     state: ListTipoPenalidadUiState,
     onAddTipoPenalidad: () -> Unit,
-    onSelectTipoPenalidad: (Int) -> Unit
+    onSelectTipoPenalidad: (Int) -> Unit,
+    onDeleteTipoPenalidad: (Int) -> Unit
 ) {
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Lista de Tipos de Penalidades") }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddTipoPenalidad) {
                 Icon(
@@ -92,7 +104,8 @@ private fun ListTipoPenalidadBody(
                         items(state.tiposPenalidades) { tipoPenalidad ->
                             TipoPenalidadCard(
                                 tipoPenalidad = tipoPenalidad,
-                                onSelectTipoPenalidad = onSelectTipoPenalidad
+                                onSelectTipoPenalidad = onSelectTipoPenalidad,
+                                onDeleteTipoPenalidad = onDeleteTipoPenalidad
                             )
                         }
                     }
@@ -105,23 +118,25 @@ private fun ListTipoPenalidadBody(
 @Composable
 private fun TipoPenalidadCard(
     tipoPenalidad: TipoPenalidad,
-    onSelectTipoPenalidad: (Int) -> Unit
+    onSelectTipoPenalidad: (Int) -> Unit,
+    onDeleteTipoPenalidad: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clickable { onSelectTipoPenalidad(tipoPenalidad.tipoId) },
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = tipoPenalidad.nombre,
@@ -129,21 +144,42 @@ private fun TipoPenalidadCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
+
+                Spacer(Modifier.height(4.dp))
+
                 Text(
-                    text = "${tipoPenalidad.puntosDescuento} puntos",
+                    text = tipoPenalidad.descripcion,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = "${tipoPenalidad.puntosDescuento} puntos de descuento",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(Modifier.height(4.dp))
 
-            Text(
-                text = tipoPenalidad.descripcion,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row {
+                IconButton(onClick = { onSelectTipoPenalidad(tipoPenalidad.tipoId) }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = { onDeleteTipoPenalidad(tipoPenalidad.tipoId) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         }
     }
 }
@@ -178,7 +214,8 @@ private fun ListTipoPenalidadWithDataPreview() {
                 )
             ),
             onAddTipoPenalidad = {},
-            onSelectTipoPenalidad = {}
+            onSelectTipoPenalidad = {},
+            onDeleteTipoPenalidad = {}
         )
     }
 }
@@ -190,7 +227,8 @@ private fun ListTipoPenalidadEmptyPreview() {
         ListTipoPenalidadBody(
             state = ListTipoPenalidadUiState(tiposPenalidades = emptyList()),
             onAddTipoPenalidad = {},
-            onSelectTipoPenalidad = {}
+            onSelectTipoPenalidad = {},
+            onDeleteTipoPenalidad = {}
         )
     }
 }
@@ -206,8 +244,8 @@ private fun TipoPenalidadCardPreview() {
                 descripcion = "No asistir a clase sin justificación válida",
                 puntosDescuento = 5
             ),
-            onSelectTipoPenalidad = {}
+            onSelectTipoPenalidad = {},
+            onDeleteTipoPenalidad = {}
         )
     }
 }
-
