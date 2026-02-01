@@ -6,8 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -33,6 +35,16 @@ fun DrawerMenu(
 ) {
     val selectedItem = remember { mutableStateOf("Estudiantes") }
     val scope = rememberCoroutineScope()
+
+
+    val currentBackStackEntry = navHostController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry.value?.destination?.route
+
+    val drawerTitle = when {
+        currentRoute?.contains("TipoPenalidad") == true -> "Lista de Penalidades"
+        currentRoute?.contains("Asignatura") == true -> "Lista de Asignaturas"
+        else -> "Registro de Estudiantes"
+    }
 
     fun handleItemClick(destination: Screen, item: String) {
         navHostController.navigate(destination) {
@@ -51,7 +63,7 @@ fun DrawerMenu(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Registro de Estudiantes",
+                    text = drawerTitle,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.DarkGray,
@@ -73,10 +85,18 @@ fun DrawerMenu(
 
                         DrawerItem(
                             title = "Asignaturas",
-                            icon = Icons.Filled.MenuBook,
+                            icon = Icons.Filled.Description,
                             isSelected = selectedItem.value == "Asignaturas"
                         ) {
                             handleItemClick(Screen.AsignaturaList, it)
+                        }
+
+                        DrawerItem(
+                            title = "Tipos de Penalidades",
+                            icon = Icons.Filled.Warning,
+                            isSelected = selectedItem.value == "Tipos de Penalidades"
+                        ) {
+                            handleItemClick(Screen.TipoPenalidadList, it)
                         }
                     }
                 }

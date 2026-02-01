@@ -7,33 +7,45 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import edu.ucne.RegistroDeEstudiantes.data.asignaturas.local.AsignaturaDao
 import edu.ucne.RegistroDeEstudiantes.data.database.EstudianteDb
 import edu.ucne.RegistroDeEstudiantes.data.students.local.EstudianteDao
+import edu.ucne.RegistroDeEstudiantes.data.asignaturas.local.AsignaturaDao
+import edu.ucne.RegistroDeEstudiantes.data.penalidades.local.TipoPenalidadDao
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
 @Module
-object AppModule {
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideEstudianteDb(@ApplicationContext appContext: Context) =
-        Room.databaseBuilder(
-            appContext,
-            klass = EstudianteDb::class.java,
-            name = "Estudiante.db"
-        ).fallbackToDestructiveMigration()
+    fun provideEstudianteDatabase(
+        @ApplicationContext context: Context
+    ): EstudianteDb {
+        return Room.databaseBuilder(
+            context,
+            EstudianteDb::class.java,
+            "estudiante_database"
+        )
+            .fallbackToDestructiveMigration()
             .build()
+    }
 
     @Provides
     @Singleton
-    fun provideEstudianteDao(database: EstudianteDb): EstudianteDao =
-        database.estudianteDao()
+    fun provideEstudianteDao(database: EstudianteDb): EstudianteDao {
+        return database.estudianteDao()
+    }
 
     @Provides
     @Singleton
     fun provideAsignaturaDao(database: EstudianteDb): AsignaturaDao {
         return database.asignaturaDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTipoPenalidadDao(database: EstudianteDb): TipoPenalidadDao {
+        return database.tipoPenalidadDao()
     }
 }

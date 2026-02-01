@@ -9,6 +9,8 @@ import edu.ucne.RegistroDeEstudiantes.presentation.students.edit.EditEstudianteS
 import edu.ucne.RegistroDeEstudiantes.presentation.students.list.ListEstudianteScreen
 import edu.ucne.RegistroDeEstudiantes.presentation.asignaturas.edit.EditAsignaturaScreen
 import edu.ucne.RegistroDeEstudiantes.presentation.asignaturas.list.ListAsignaturaScreen
+import edu.ucne.RegistroDeEstudiantes.presentation.penalidades.edit.EditTipoPenalidadScreen
+import edu.ucne.RegistroDeEstudiantes.presentation.penalidades.list.ListTipoPenalidadScreen
 
 @Composable
 fun MainNavHost(
@@ -53,6 +55,27 @@ fun MainNavHost(
             val args = it.toRoute<Screen.EditAsignatura>()
             EditAsignaturaScreen(
                 asignaturaId = args.asignaturaId,
+                onNavigateBack = {
+                    navHostController.navigateUp()
+                }
+            )
+        }
+
+
+        composable<Screen.TipoPenalidadList> {
+            ListTipoPenalidadScreen(
+                onAddTipoPenalidad = {
+                    navHostController.navigate(Screen.EditTipoPenalidad(tipoId = null))
+                },
+                onSelectTipoPenalidad = { tipoId ->
+                    navHostController.navigate(Screen.EditTipoPenalidad(tipoId = tipoId))
+                }
+            )
+        }
+
+        composable<Screen.EditTipoPenalidad> {
+            val args = it.toRoute<Screen.EditTipoPenalidad>()
+            EditTipoPenalidadScreen(
                 onNavigateBack = {
                     navHostController.navigateUp()
                 }
