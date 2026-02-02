@@ -20,7 +20,9 @@ class ListTipoPenalidadViewModel @Inject constructor(
     private val deleteTipoPenalidadUseCase: DeleteTipoPenalidadUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ListTipoPenalidadUiState())
+    private val _state = MutableStateFlow(
+        ListTipoPenalidadUiState(isLoading = true)
+    )
     val state: StateFlow<ListTipoPenalidadUiState> = _state.asStateFlow()
 
     init {
