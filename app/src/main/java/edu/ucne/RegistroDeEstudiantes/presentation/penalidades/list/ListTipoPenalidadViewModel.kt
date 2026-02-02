@@ -27,7 +27,11 @@ class ListTipoPenalidadViewModel @Inject constructor(
         observeTiposPenalidadesUseCase()
             .onEach { tiposPenalidades ->
                 _state.update {
-                    it.copy(tiposPenalidades = tiposPenalidades, isLoading = false)
+                    it.copy(
+                        tiposPenalidades = tiposPenalidades,
+                        isLoading = false,
+                        errorMessage = null
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -35,7 +39,23 @@ class ListTipoPenalidadViewModel @Inject constructor(
 
     fun deleteTipoPenalidad(id: Int) {
         viewModelScope.launch {
-            deleteTipoPenalidadUseCase(id)
+            _state.update { it.copy(isDeleting = true, errorMessage = null) }
+
+            try {
+                deleteTipoPenalidadUseCase(id)
+                _state.update { it.copy(isDeleting = false) }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isDeleting = false,
+                        errorMessage = "Error al eliminar: ${e.message ?: "Error desconocido"}"
+                    )
+                }
+            }
         }
+    }
+
+    fun clearError() {
+        _state.update { it.copy(errorMessage = null) }
     }
 }
