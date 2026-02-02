@@ -15,19 +15,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -36,10 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.RegistroDeEstudiantes.domain.penalidades.model.TipoPenalidad
+import kotlinx.coroutines.launch
 
 @Composable
 fun ListTipoPenalidadScreen(
     viewModel: ListTipoPenalidadViewModel = hiltViewModel(),
+    drawerState: DrawerState,
     onAddTipoPenalidad: () -> Unit,
     onSelectTipoPenalidad: (Int) -> Unit
 ) {
@@ -47,9 +57,11 @@ fun ListTipoPenalidadScreen(
 
     ListTipoPenalidadBody(
         state = state,
+        drawerState = drawerState,
         onAddTipoPenalidad = onAddTipoPenalidad,
         onSelectTipoPenalidad = onSelectTipoPenalidad,
-        onDeleteTipoPenalidad = { viewModel.deleteTipoPenalidad(it) }
+        onDeleteTipoPenalidad = { viewModel.deleteTipoPenalidad(it) },
+        onClearError = { viewModel.clearError() }
     )
 }
 
@@ -57,14 +69,43 @@ fun ListTipoPenalidadScreen(
 @Composable
 private fun ListTipoPenalidadBody(
     state: ListTipoPenalidadUiState,
+    drawerState: DrawerState,
     onAddTipoPenalidad: () -> Unit,
     onSelectTipoPenalidad: (Int) -> Unit,
-    onDeleteTipoPenalidad: (Int) -> Unit
+    onDeleteTipoPenalidad: (Int) -> Unit,
+    onClearError: () -> Unit = {}
 ) {
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
+    LaunchedEffect(state.errorMessage) {
+        state.errorMessage?.let { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+            )
+            onClearError()
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Lista de Tipos de Penalidades") }
+                title = { Text("Lista de Penalidades") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Abrir menú"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -110,6 +151,13 @@ private fun ListTipoPenalidadBody(
                         }
                     }
                 }
+            }
+
+
+            if (state.isDeleting) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }
@@ -185,7 +233,6 @@ private fun TipoPenalidadCard(
 }
 
 
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ListTipoPenalidadWithDataPreview() {
@@ -213,6 +260,9 @@ private fun ListTipoPenalidadWithDataPreview() {
                     )
                 )
             ),
+            drawerState = androidx.compose.material3.rememberDrawerState(
+                initialValue = androidx.compose.material3.DrawerValue.Closed
+            ),
             onAddTipoPenalidad = {},
             onSelectTipoPenalidad = {},
             onDeleteTipoPenalidad = {}
@@ -226,6 +276,9 @@ private fun ListTipoPenalidadEmptyPreview() {
     MaterialTheme {
         ListTipoPenalidadBody(
             state = ListTipoPenalidadUiState(tiposPenalidades = emptyList()),
+            drawerState = androidx.compose.material3.rememberDrawerState(
+                initialValue = androidx.compose.material3.DrawerValue.Closed
+            ),
             onAddTipoPenalidad = {},
             onSelectTipoPenalidad = {},
             onDeleteTipoPenalidad = {}
